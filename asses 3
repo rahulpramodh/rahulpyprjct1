@@ -1,0 +1,59 @@
+import time
+import threading
+import requests
+from datetime import datetime
+
+class TrafficMonitor:
+    def __init__(self, api_key, api_endpoint, interval=10):
+        self.api_key = api_key
+        self.api_endpoint = api_endpoint
+        self.interval = interval
+        self.is_running = False
+
+    def start(self):
+        self.is_running = True
+        thread = threading.Thread(target=self.run)
+        thread.daemon = True
+        thread.start()
+
+    def stop(self):
+        self.is_running = False
+
+    def run(self):
+        while self.is_running:
+            try:
+                headers = {"Authorization": f"Bearer {self.api_key}"}
+                response = requests.get(self.api_endpoint, headers=headers)
+                response.raise_for_status()
+                data = response.json()
+                self.process_data(data)
+            except requests.exceptions.RequestException as e:
+                print(f"API request error: {e}")
+            except Exception as e:
+                print(f"Error: {e}")
+            time.sleep(self.interval)
+
+    def process_data(self, data):
+        # Process the traffic data here 
+        # Example:
+        for traffic_point in data['traffic_points']:
+            timestamp = datetime.fromtimestamp(traffic_point['timestamp'])
+            speed = traffic_point['speed']
+            location = traffic_point['location']
+            print(f"{timestamp}: Speed at {location} is {speed}")
+
+# Example API endpoint and data key (replace with your actual values)
+api_key = "your_api_key"  # Replace with your actual API key
+api_endpoint = "https://api.example.com/traffic"  # Replace with your API endpoint
+
+# Create and start the monitor
+monitor = TrafficMonitor(api_key, api_endpoint, interval=10)
+monitor.start()
+
+# Run some other code or let the monitor run indefinitely
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    monitor.stop()
+    print("Monitor stopped.")
