@@ -43,7 +43,7 @@ class CovidTracker:
 
 # Example API URL and API Key (replace with your actual values)
 api_url = "https://api.example.com/covid19/stats"  # Replace with your actual API URL
-api_key = fc240b588fmsh900205683b8c9a0p1347c1jsnb89f7d4bea92'
+api_key = "fc240b588fmsh900205683b8c9a0p1347c1jsnb89f7d4bea92"
 # Create and start the tracker
 tracker = CovidTracker(api_url, api_key, interval=300)  # Update interval (in seconds) as needed
 tracker.start()
