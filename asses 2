@@ -1,0 +1,70 @@
+import datetime
+
+class InventoryItem:
+    def __init__(self, name, quantity, unit_price, reorder_point):
+        self.name = name
+        self.quantity = quantity
+        self.unit_price = unit_price
+        self.reorder_point = reorder_point
+        self.last_updated = datetime.datetime.now()
+
+    def __str__(self):
+        return f"Item: {self.name}\nQuantity: {self.quantity}\nUnit Price: {self.unit_price}\nReorder Point: {self.reorder_point}\nLast Updated: {self.last_updated.strftime('%Y-%m-%d %H:%M:%S')}"
+
+    def update_quantity(self, quantity_change):
+        self.quantity += quantity_change
+        self.last_updated = datetime.datetime.now()
+
+    def is_low_stock(self):
+        return self.quantity <= self.reorder_point
+
+class InventoryManager:
+    def __init__(self):
+        self.inventory = {}
+
+    def add_item(self, name, quantity, unit_price, reorder_point):
+        if name not in self.inventory:
+            self.inventory[name] = InventoryItem(name, quantity, unit_price, reorder_point)
+            print(f"Item '{name}' added to inventory.")
+        else:
+            print(f"Item '{name}' already exists in inventory.")
+
+    def get_item(self, name):
+        if name in self.inventory:
+            return self.inventory[name]
+        else:
+            print(f"Item '{name}' not found in inventory.")
+            return None
+
+    def update_quantity(self, name, quantity_change):
+        item = self.get_item(name)
+        if item:
+            item.update_quantity(quantity_change)
+            print(f"Quantity of '{name}' updated.")
+        else:
+            print(f"Item '{name}' not found in inventory.")
+
+    def generate_report(self):
+        print("Inventory Report:")
+        for item in self.inventory.values():
+            print(item)
+            if item.is_low_stock():
+                print("** LOW STOCK WARNING **")
+
+    def check_low_stock(self):
+        print("Low Stock Items:")
+        for item in self.inventory.values():
+            if item.is_low_stock():
+                print(item)
+
+# Example usage:
+inventory = InventoryManager()
+inventory.add_item("Laptop", 20, 1200, 5)
+inventory.add_item("Keyboard", 50, 30, 10)
+inventory.add_item("Mouse", 100, 15, 20)
+
+inventory.update_quantity("Keyboard", -10)  # Sell 10 keyboards
+inventory.update_quantity("Mouse", 50)    # Receive 50 mice
+
+inventory.generate_report()
+inventory.check_low_stock()
